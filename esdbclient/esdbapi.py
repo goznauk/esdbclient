@@ -232,16 +232,27 @@ class Streams:
             )
         ]
         for event in events:
+            if event.contentType == "application/json":
+                metadata = {
+                    "type": event.type,
+                    "content-type": "application/json",
+                }
+                data = event.data
+            else:
+                metadata = {
+                    "type": event.type,
+                    "content-type": "application/octet-stream",
+                }
+                data = event.data
+                
+            
             requests.append(
                 AppendReq(
                     proposed_message=AppendReq.ProposedMessage(
                         id=UUID(string=str(uuid4())),
-                        metadata={
-                            "type": event.type,
-                            "content-type": "application/octet-stream",
-                        },
+                        metadata=metadata,
                         custom_metadata=event.metadata,
-                        data=event.data,
+                        data=data,
                     )
                 )
             )
